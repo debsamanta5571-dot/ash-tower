@@ -20,19 +20,19 @@ You are the Cinder Knight. Climb the tower, collect cards and relics, and fight 
 
 **Deckbuilding**
 
-The deck is the run. You start with a small kit and grow it through rewards, shops, and events. Cards cycle draw, hand, discard. Exhaust takes a card out of the fight, which is both a cost and a way to thin. Upgrades happen at rest, not automatically, so you choose what to invest in. Events can add cards you do not want. The point is a deck that drifts toward a plan, then has to live with whatever you picked two floors ago.
+Cards are data plus an optional play callback, not a subclass per card. A definition holds cost, type, targeting, and numbers. Runtime state (upgrade, cost mods) lives on a wrapper so the catalog stays immutable. The run keeps the persistent deck. Combat clones it into draw, hand, discard, and exhaust. Play always goes through one path: pay energy, apply the numbers, then run the callback if there is one. New cards are catalog entries. Rest, shop, and events only mutate the run deck.
 
 **Energy**
 
-Energy is the turn budget. You get a fresh pool each turn and spend it on cards. Some cards dump the rest of the pool in one play. Relics and statuses can discount, refund, or pay you for shuffling. Leaving energy unspent is a choice, not a waste: some relics convert leftovers into block. Sequencing matters more than raw card quality because three energy only buys so much.
+Energy is combat-scoped and reset at the start of each player turn. Cost is resolved in one function so relics, statuses, X-cost, and free-play flags cannot disagree. Spend happens at play time. Whatever is left stays on the combatant until turn end, which is how leftover-energy relics work without a second currency.
 
 **Relics**
 
-Relics are passive rules you collect, not extra buttons. They fire at the start of a fight, on play, on hit, on shuffle, or after combat. The design is that they stack with cards instead of replacing them. A relic that refunds energy changes which expensive cards are even legal. A relic that triggers on HP loss turns taking a hit into part of the turn. You find them in shops, events, and elites, and they quietly rewrite the same combat loop.
+Relics are hook lists, not a switch on relic id inside combat. Each relic can subscribe to fight start, turn start, turn end, card play, HP loss, shuffle, pickup, or after combat. Combat broadcasts those moments. Adding a relic is a catalog row and a lambda. Pickup is unique by id so the same relic cannot stack twice by accident.
 
 **Combat**
 
-Enemies telegraph intent, so you play around the next hit instead of guessing. Block is a layer in front of HP and usually dumps at the start of the next turn. Statuses are built to force a decision: Heft burns everyone at end of turn, Brittle punches through block, Dulled cuts outgoing damage, Unsteady punishes ending a turn at 0 block, Nails bite back when block gets chipped. Damage, block, and relics all go through that same pipeline so a relic never skips the rules a card has to follow.
+Combat is a single rules engine. Enemies expose an intent so the UI is a view of the next move, not a separate AI. Damage always enters one function: block, then HP, then status reactions (Brittle, Nails, Heft, Dulled, Unsteady). Cards, relics, and enemy moves call that function instead of writing their own HP math. Statuses are a stack map on the combatant, ticked at turn boundaries, so a new status is data and a tick rule rather than a new combat class.
 
 ## Play
 

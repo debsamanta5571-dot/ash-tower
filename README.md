@@ -14,13 +14,13 @@ You are the Cinder Knight. Climb the tower, collect cards and relics, and fight 
 
 Unzip and run `AshTower.exe`.
 
-## Features
+## Gameplay Features
 
 - Card combat with intent, block, status, and relic hooks
 - Procedural climb with a map
 - Shop, rest, and reward screens
 
-## Contents
+## What’s in the game
 
 - 54 cards
 - 9 enemies
@@ -28,7 +28,7 @@ Unzip and run `AshTower.exe`.
 - 10 potions
 - 6 events
 
-## Mechanics
+## Technical Mechanics
 
 ### Deckbuilding
 

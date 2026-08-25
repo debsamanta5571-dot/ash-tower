@@ -1,6 +1,6 @@
 # Ash Tower
 
-A deckbuilding roguelike.
+A totally original deckbuilding roguelike.
 
 ![Ash Tower](Docs/preview.gif)
 

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f15b0228f5050049a5b8a42cf4d5605, type: 3}
+  m_Name: UiLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::AshTower.UiLibrary
+  card: {fileID: 4492180143254822348, guid: 729995cd07e86b34682236da5414df2b, type: 3}
+  enemy: {fileID: 4174301228091872033, guid: 6af4abef997e38c42aa5258e627ee7c1, type: 3}
+  mapNode: {fileID: 4379301735496199123, guid: 3e67cf48808fecf4082efe049bfbc530, type: 3}
+  statusChip: {fileID: 6036842638457155499, guid: 31e47ff7106647448be42cf5846f488b, type: 3}
+  potionSlot: {fileID: 0}

@@ -1,0 +1,55 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Crash dumps and packed players
+sysinfo.txt
+*.stackdump
+CrashReports/
+Ash Tower_BurstDebugInformation_DoNotShip/
+
+# Packaged player folder, keep the Windows zip
+[Dd]ist/*
+!Dist/AshTower-Windows.zip
+
+# Local tooling (do not commit)
+*.log
+
+# GIF work files (keep Docs/preview.gif)
+Docs/gif-frames/
+Docs/gif-fine/
+Docs/gif-check/
+Docs/preview-src.mp4
+Docs/palette.png

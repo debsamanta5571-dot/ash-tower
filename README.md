@@ -8,6 +8,12 @@ Someone once told me you aren't a real game developer until you've made a roguel
 
 You are the Cinder Knight. Climb the tower, collect cards and relics, and fight your way to the final boss.
 
+## Play
+
+[Download for Windows](https://github.com/debsamanta5571-dot/ash-tower/releases/download/v0.1/AshTower-Windows.zip)
+
+Unzip and run `AshTower.exe`.
+
 ## Contents
 
 - 54 cards
@@ -15,6 +21,12 @@ You are the Cinder Knight. Climb the tower, collect cards and relics, and fight 
 - 29 relics
 - 10 potions
 - 6 events
+
+## Features
+
+- Card combat with intent, block, status, and relic hooks
+- Procedural climb with a map
+- Shop, rest, and reward screens
 
 ## Mechanics
 
@@ -35,18 +47,5 @@ Relics are not a giant switch statement inside combat. Each one can hook a momen
 ### Combat
 
 One rules engine runs the fight. Enemies pick a move and show an intent, so the UI is reading the next action, not guessing. All damage goes through one function. Block first, then HP, then status reactions. Brittle, Nails, Heft, Dulled, and Unsteady hang on the fighter as stacks and update at turn boundaries. Cards, relics, and enemy moves all call that same damage function, so nothing gets to invent its own HP math.
-
-## Play
-
-[Download for Windows](https://github.com/debsamanta5571-dot/ash-tower/releases/download/v0.1/AshTower-Windows.zip)
-
-Unzip and run `AshTower.exe`.
-
-## Features
-
-- Card combat with intent, block, status, and relic hooks
-- Procedural climb with a map
-- Cards, relics, potions, and events
-- Shop, rest, and reward screens
 
 Made with Unity 6.3 LTS (`6000.3.0f1`).

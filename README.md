@@ -14,7 +14,7 @@ You play as the Cinder Knight. Build a deck as you climb and fight to make it to
 
 Unzip and run `AshTower.exe`.
 
-## Gameplay Features
+## Features
 
 - 54 forged cards
 - 9 scary enemies

@@ -71,4 +71,4 @@ Entering a node sets the floor and opens the matching screen. When a fight ends,
 
 ### Build
 
-Made with Unity 6.3 LTS (`6000.3.0f1`). The playable Windows build is on the release page. To open the source, add the folder that contains `Assets`, `Packages`, and `ProjectSettings`. A GitHub zip puts that folder one level down, inside `ash-tower-main`. Open `Assets/Scenes/AshTower.unity` and press Play. The UI is constructed in code, so the scene looks sparse until Play.
+Made with Unity 6.3 LTS (`6000.3.0f1`).

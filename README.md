@@ -16,14 +16,14 @@ Unzip and run `AshTower.exe`.
 
 ## Gameplay Features
 
-- Card combat with intent, block, status, and relic hooks
-- Procedural climb with a map
-- Shop, rest, and reward screens
 - 54 forged cards
 - 9 scary enemies
 - 29 relics
 - 10 tasty potions
 - 6 interesting events
+- Card combat with intent, block, status, and relic hooks
+- Procedural climb with a map
+- Shop, rest, and reward screens
 
 ## Technical Mechanics
 

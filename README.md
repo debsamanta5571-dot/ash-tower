@@ -63,7 +63,7 @@ Block is cleared at the start of the next turn unless something keeps it. Holdfa
 
 Each enemy has a `Choose` function that returns a `Move` (intent, damage, hits, block, heft, debuff). Combat stores that as `CurrentMove` so the UI can show intent before the enemy acts. After they act, they choose again. Encounters are drawn from string pools by map row: easier mixes early, harder pairs later. Elites and the boss use fixed ids.
 
-### Climb
+### The Climb
 
 The map is generated at run start on a 15 by 7 grid. The first row is three fights. The second-to-last row is rest. The last row is a single boss. Other rooms are a weighted roll among elite, event, rest, shop, treasure, and fight. Edges prefer nearby columns, then a second pass connects any room that would have been unreachable. You can only enter a neighbor of the current node.
 

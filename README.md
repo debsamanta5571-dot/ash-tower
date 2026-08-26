@@ -32,44 +32,46 @@ Unzip and run `AshTower.exe`.
 
 ### Architecture
 
-`RunState` is the climb. It owns HP, gold, the persistent deck, relics, potions, and a generated map. `CombatState` is the fight. It owns energy, draw, hand, discard, exhaust, enemies, and the damage pipeline. `AshTowerApp` is the host. It opens screens and calls into those two objects. Title, map, combat, shop, rest, events, and rewards do not keep their own HP or deck.
+There are two blobs of state and the screens sit on top of them. `RunState` is the climb: HP, gold, deck, relics, potions, map. `CombatState` is one fight: energy, piles, enemies, turns. `AshTowerApp` opens a screen and asks those objects to do work. The shop does not store your gold. The combat screen does not store your HP.
 
-Catalogs are built once in C# (`CardCatalog`, `EnemyCatalog`, `RelicCatalog`, `PotionCatalog`, `EventCatalog`). There is no JSON pack and no ScriptableObject per card. UI listens to a list of combat floaters (`CombatFx`) after each action. Pressing a button asks combat if the play is legal, then combat mutates state, then the screen redraws.
+Cards, enemies, relics, potions, and events are C# lists filled once at boot. No JSON pack. No ScriptableObject per card. After an action, combat pushes a small floater list (`CombatFx`) and the UI redraws from that.
 
 ### Deckbuilding
 
-A `CardDef` is static data: cost, type, target mode, damage, block, draw, exhaust, ethereal, innate, X-cost, and an optional extra effect. A `CardRuntime` is the copy you hold: which def, whether it is upgraded, and flags like free-this-turn.
+`CardDef` is the printed card. Cost, type, targeting, the usual numbers, plus an extra effect if the card needs one. `CardRuntime` is the copy in your hand, which might be upgraded or free this turn.
 
-The starter deck is five Ember Cut, four Ash Guard, one Slag Bash, plus the Kiln Spark relic. `RunState.AddCard` is the only way the climb grows the deck. Rest, shop, rewards, and events call that. A fight does not share those objects. `CombatState.Begin` clones each run card into a new runtime (def and upgrade only), shuffles the draw pile, then starts the first player turn.
+You start with five Ember Cut, four Ash Guard, Slag Bash, and Kiln Spark. Anything that adds a card (rest, shop, rewards, events) goes through `RunState.AddCard`. Combat does not touch those objects. At fight start it clones each run card (def and upgrade only), shuffles, and deals.
 
-Play is one function. `CanPlay` checks hand membership, unplayable, energy, and targeting. `Play` spends energy, removes the card from hand, applies the def numbers (damage, block, draw), then runs the extra effect if the card has one. Attacks, skills, and powers are types on the def, not subclasses. Powers stay in a power list. Exhaust goes to the exhaust pile. Everything else hits discard. Hand size caps at 10. Empty draw pile recycles discard and fires shuffle hooks.
+`CanPlay` is the boring gate: in hand, playable, enough energy, has a target. `Play` spends, peels the card off, applies damage / block / draw from the def, then runs the extra effect if there is one. Attack, skill, and power are a field on the def. Powers stay in play. Exhaust leaves the fight. Everything else goes to discard. Hand tops out at 10. Empty draw pile shuffles discard back in, and shuffle relics fire there.
 
 ### Energy
 
-Energy is combat-only. `EnergyMax` is 3 plus any run bonus. Each player turn sets `Energy = EnergyMax`, then draws five. Cost is `CardRuntime.GetCost`: unplayable and free-this-turn are 0, X-cost is current energy, First Cut zeros the first play of a fight, otherwise it is base cost plus modifiers. `Play` subtracts that number. X-cost also stores the spent amount as `XValue` so cards like Ashcyclone can hit once per energy spent.
+You only have energy in a fight. Max is 3 unless the run bumped it. Turn start fills the pool and draws five.
 
-Leftover energy stays on the combat object until the turn ends. Relics that convert remainder into block read it there. They do not need a second resource.
+Every cost goes through `GetCost`. Unplayable and free-this-turn come back 0. X-cost is whatever you have left (Ashcyclone stores that as `XValue` and hits once per). First Cut makes the first card of a fight free. Otherwise it is printed cost plus modifiers. `Play` subtracts the number it was given. Whatever you did not spend is still sitting on the combat object at turn end, which is how leftover-energy relics work.
 
 ### Relics
 
-A `RelicDef` is a catalog row with optional hooks: fight start, turn start, turn end, card play, player HP loss, shuffle, pickup, and after combat. `CombatState` calls those lists at the matching points. `RunState.AddRelic` refuses a second copy of the same id, then runs pickup.
+Each relic is a catalog row that can hang a function off a moment: fight start, turn start, turn end, you played a card, you lost HP, you shuffled, you picked the relic up, fight over. Combat just calls those moments. Pickup refuses a second copy of the same id.
 
-Because the hooks sit on the same fight, a relic that refunds energy, a relic that pays you for shuffling, and a relic that reacts to HP loss all compose. Combat does not switch on relic id for the turn order. A few relics still special-case inside damage or exhaust (Forge Wedge extra damage, Splinter Bough on exhaust). The rest are hook functions on the def.
+Most relics live there. A couple still poke into damage or exhaust by name (Forge Wedge's extra damage, Splinter Bough when something exhausts). The turn order itself does not switch on relic ids.
 
 ### Combat
 
-`DealDamage` is the only place hits become HP. Order is: relic damage riders, then block unless Brittle is piercing, then Nails if block was chipped, then Seal if it would eat the HP, then HP, then on-hit reactions (Hunker, Quills, Flame Ward, enemy `OnDamaged`). Brittle is consumed after the hits. Dulled is recoil: after a card attack, the attacker loses HP equal to their Dulled, then one stack drops. Heft is not a rider on the card. At end of turn `PulseHeft` deals the stack through `DealDamage` (so block still applies) and drops one. Unsteady is `LoseHp` if you end the turn at 0 block.
+Hits become HP in one place, `DealDamage`. Relic riders first. Then block, unless Brittle is ignoring it. If block actually chipped, Nails hits the attacker (block still counted). Seal can eat the HP loss. Then HP. Then the on-hit stuff: Hunker, Quills, Flame Ward, the enemy's `OnDamaged`. Brittle falls off after the hits.
 
-Block usually dumps at the start of the next turn (`SettleBlock`). Holdfast and Hold Guard keep it for a turn. Poise keeps a cap. Kiln Rim keeps 40 percent.
+Dulled is recoil. After you swing with a card, you take your Dulled as HP and lose one stack. Heft is not baked into the card. At end of turn `PulseHeft` runs the stack through `DealDamage` (so block still matters) and drops one. Unsteady is a straight HP loss if you end the turn at 0 block.
 
-Enemies are `EnemyDef` rows. Each has a `Choose` function that returns a `Move` (intent, damage, hits, block, heft, debuff). Combat stores that move as `CurrentMove` so the UI can draw intent before the enemy acts. After they act, they choose again. Encounters are string pools by map row: easy before row 4, mid until 9, hard after, elites and the boss are fixed ids.
+Block usually dies at the start of the next turn. Holdfast and Hold Guard keep it. Poise keeps a cap. Kiln Rim keeps 40%.
+
+Enemies pick a `Move` (intent, damage, hits, block, heft, debuff) and combat holds that as `CurrentMove` so the UI can show intent before they act. Then they pick again. Early floors roll easy encounter strings, mid floors mix, late floors get the ugly pairs. Elites and the boss are fixed ids.
 
 ### Climb
 
-The map is 15 rows by 7 columns, generated at run start. Row 0 is three fights. Row 13 is rest. Row 14 is one boss. Other rooms roll elite, event, rest, shop, treasure, or fight. Edges prefer nearby columns, then a pass makes sure every node on the next row is reachable. You may only enter a neighbor of the current node.
+Map is 15 rows by 7 columns, rolled when the run starts. First row is three fights. Second to last is rest. Last row is one boss. Everything in between is a weighted roll: elite, event, rest, shop, treasure, or fight. Links prefer nearby columns, then a second pass attaches any room that nobody pointed at. You can only walk to a neighbor of where you are.
 
-Entering a node sets floor to `row + 1` and opens the matching screen. Combat copies HP back onto the run when the fight ends. Rest heals 30 percent of max HP or upgrades a card already in the deck. Shop stock is catalog rows with a price, plus a remove that gets more expensive each time. Events are a title, body, and a list of options whose apply functions mutate the run.
+Entering a node sets the floor and opens that screen. After a fight, HP copies back onto the run. Rest is 30% of max HP or an upgrade on a card you already have. Shop is catalog rows with prices, and removing a card gets more expensive each time. Events are a prompt and a list of options that mutate the run.
 
 ### Build
 
-Unity 6.3 LTS (`6000.3.0f1`). Playable Windows zip is on the release. If you clone or unzip the GitHub source, open the folder that contains `Assets`, `Packages`, and `ProjectSettings` together. After a GitHub zip that is the inner `ash-tower-main` folder, not the wrapper around it. Open `Assets/Scenes/AshTower.unity` and press Play. The UI is built in code at runtime, so the scene looks sparse until then.
+Unity 6.3 LTS (`6000.3.0f1`). The Windows zip is on the release. For the source, open the folder that has `Assets`, `Packages`, and `ProjectSettings` in it. GitHub zips nest that inside `ash-tower-main`. Open `Assets/Scenes/AshTower.unity` and press Play. The UI is built in code, so the scene looks empty until then.

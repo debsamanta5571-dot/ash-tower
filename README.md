@@ -14,11 +14,19 @@ You play as the Cinder Knight. Build a deck as you climb and fight whatever is w
 
 Unzip and run `AshTower.exe`.
 
-## What's in it
+## Gameplay Features
 
-You climb a generated map. Fights run on energy, block, enemy intent, and statuses, and relics hook into that loop. Between rooms you get shops, rest, events, and rewards.
+- Card combat with intent, block, status, and relic hooks
+- Procedural climb with a map
+- Shop, rest, and reward screens
 
-There are 54 cards, 9 enemies, 29 relics, 10 potions, and 6 events.
+## What’s in the game
+
+- 54 cards
+- 9 enemies
+- 29 relics
+- 10 potions
+- 6 events
 
 ## Technical Mechanics
 

@@ -6,7 +6,7 @@ A totally original deckbuilding roguelike.
 
 Someone once told me you aren't a real game developer until you've made a roguelike deckbuilder. Tell me if you can guess the inspiration.
 
-You are the Cinder Knight. Journey through the tower, collect cards and relics, and fight your way to the final boss. Can you survive the ash tower?
+You play as the Cinder Knight. Build a deck as you climb and fight whatever is waiting at the top. Can you survive the ash tower?
 
 ## Play
 
